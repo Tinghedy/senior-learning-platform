@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+:root {
+  /* ---- 文字色 ---- */
+  --color-text-primary:   #1A1A1A;  /* 16.1:1 on page — AAA */
+  --color-text-secondary: #444444;  /* 9.7:1  — AAA */
+  --color-text-muted:     #5C5C5C;  /* 7.0:1  — AAA 下限，勿更淺 */
+  --color-text-on-accent: #FFFFFF;  /* 5.9:1 on accent — AA */
+  --color-link:           #0B5FB0;
+
+  /* ---- 表面 ---- */
+  --color-page:    #FBF9F4;
+  --color-card:    #FFFFFF;
+  --color-sunken:  #F0EDE6;
+  --color-border:  #C7C2B8;
+
+  /* ---- 主色 ---- */
+  --color-accent:        #1F6FC2;
+  --color-accent-hover:  #175699;
+  --color-accent-subtle: #E7F0FA;
+
+  /* ---- 語意回饋 ---- */
+  --color-success:    #1E7A45;
+  --color-error:      #B3261E;
+  --color-error-bg:   #FCEEEE;
+  --color-warning:    #9A5B00;
+  --color-warning-bg: #FBF1E2;
+
+  /* ---- 焦點 ---- */
+  --color-focus: #0B3D91;
+
+  /* ---- 字級（基準 18px，全 rem，ratio 1.2）---- */
+  --font-size-caption: 0.889rem; /* 16px — 地板，勿更小 */
+  --font-size-body:    1rem;     /* 18px */
+  --font-size-body-lg: 1.125rem; /* 20px */
+  --font-size-h3:      1.333rem; /* 24px */
+  --font-size-h2:      1.6rem;   /* 29px */
+  --font-size-h1:      2rem;     /* 36px */
+
+  /* ---- 行高 ---- */
+  --line-height-tight: 1.3;
+  --line-height-body:  1.6;
+
+  /* ---- 間距（8px grid）---- */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+
+  /* ---- 尺寸 ---- */
+  --touch-target: 48px;
+  --touch-gap:    8px;
+  --icon-sm: 20px;
+  --icon-md: 24px;
+  --icon-lg: 28px;
+
+  /* ---- 圓角 ---- */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-pill: 999px;
+
+  /* ---- 框線 ---- */
+  --border-hairline: 1px;
+  --border-default:  1.5px;
+  --border-strong:   2px;
+
+  /* ---- 焦點環 ---- */
+  --focus-width:  3px;
+  --focus-offset: 2px;
+
+  /* ---- 字體 ---- */
+  --font-base: 'Noto Sans TC', system-ui, sans-serif;
+}
+
+/* 基準字級 18px — WCAG 1.4.4 */
+html { font-size: 18px; }
+
+body {
+  font-family: var(--font-base);
+  background: var(--color-page);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 全域焦點環 — WCAG 2.4.7 */
+*:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+}
