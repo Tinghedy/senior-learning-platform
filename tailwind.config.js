@@ -1,0 +1,60 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        text: {
+          primary:   'var(--color-text-primary)',
+          secondary: 'var(--color-text-secondary)',
+          muted:     'var(--color-text-muted)',
+          'on-accent': 'var(--color-text-on-accent)',
+        },
+        link:    'var(--color-link)',
+        page:    'var(--color-page)',
+        card:    'var(--color-card)',
+        sunken:  'var(--color-sunken)',
+        border:  'var(--color-border)',
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          hover:   'var(--color-accent-hover)',
+          subtle:  'var(--color-accent-subtle)',
+        },
+        success: 'var(--color-success)',
+        error:   'var(--color-error)',
+        'error-bg': 'var(--color-error-bg)',
+        warning: 'var(--color-warning)',
+        'warning-bg': 'var(--color-warning-bg)',
+        focus:   'var(--color-focus)',
+      },
+      fontSize: {
+        caption:   ['var(--font-size-caption)', { lineHeight: 'var(--line-height-body)' }],
+        body:      ['var(--font-size-body)',    { lineHeight: 'var(--line-height-body)' }],
+        'body-lg': ['var(--font-size-body-lg)', { lineHeight: 'var(--line-height-tight)' }],
+        h3: ['var(--font-size-h3)', { lineHeight: 'var(--line-height-tight)' }],
+        h2: ['var(--font-size-h2)', { lineHeight: 'var(--line-height-tight)' }],
+        h1: ['var(--font-size-h1)', { lineHeight: 'var(--line-height-tight)' }],
+      },
+      spacing: {
+        xs:    'var(--space-xs)',
+        sm:    'var(--space-sm)',
+        md:    'var(--space-md)',
+        lg:    'var(--space-lg)',
+        xl:    'var(--space-xl)',
+        '2xl': 'var(--space-2xl)',
+        touch: 'var(--touch-target)',
+      },
+      borderRadius: {
+        sm:       'var(--radius-sm)',
+        md:       'var(--radius-md)',
+        lg:       'var(--radius-lg)',
+        'card-lg':'var(--radius-card-lg)',
+        pill:     'var(--radius-pill)',
+      },
+      minHeight: { touch: 'var(--touch-target)' },
+      minWidth:  { touch: 'var(--touch-target)' },
+      fontFamily: { base: ['Noto Sans TC', 'system-ui', 'sans-serif'] },
+    },
+  },
+  plugins: [],
+}
