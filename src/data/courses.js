@@ -1,3 +1,10 @@
+import thumb1 from '../assets/截圖 2026-07-02 上午9.58.07.png'
+import thumb2 from '../assets/截圖 2026-07-02 上午9.58.12.png'
+import thumb3 from '../assets/截圖 2026-07-02 上午9.58.19.png'
+import thumb4 from '../assets/截圖 2026-07-02 上午9.58.27.png'
+
+const thumbs = [thumb1, thumb2, thumb3, thumb4]
+
 export const courses = [
   {
     id: 1,
@@ -10,7 +17,14 @@ export const courses = [
     views: 3241,
     location: null,
     date: null,
-    thumbnail: null,
+    thumbnail: thumbs[0],
+    summary: [
+      '打開 LINE，點右上角的人頭圖示，可以加好友',
+      '找到想通話的好友，點他的名字，再按「視訊」按鈕',
+      '對方接聽後，你們就可以看到彼此的臉講話',
+      '想結束通話，就按畫面上的紅色電話圖示',
+      '沒有網路時無法使用，記得要連 Wi-Fi 或開行動數據',
+    ],
   },
   {
     id: 2,
@@ -23,7 +37,14 @@ export const courses = [
     views: 5812,
     location: null,
     date: null,
-    thumbnail: null,
+    thumbnail: thumbs[1],
+    summary: [
+      'ChatGPT 是一個可以幫你回答問題的智慧助手',
+      '不需要打字，點麥克風圖示說出問題就好',
+      '可以請它幫你寫信、查天氣、翻譯外文',
+      '問錯沒關係，重新問一次就好，它不會不耐煩',
+      '答案僅供參考，重要事情（例如就醫）還是要問專業人士',
+    ],
   },
   {
     id: 3,
@@ -36,7 +57,14 @@ export const courses = [
     views: 2089,
     location: null,
     date: null,
-    thumbnail: null,
+    thumbnail: thumbs[2],
+    summary: [
+      '下載「健康存摺」App，需要健保卡上的卡號',
+      '第一次設定需要用讀卡機或至健保署驗證身分',
+      '綁定後可直接在手機上預約各大醫院門診',
+      '掛號成功會收到簡訊通知，記得準時去',
+      '若要取消掛號，也可以在 App 裡操作，不需要打電話',
+    ],
   },
   {
     id: 4,
@@ -49,7 +77,14 @@ export const courses = [
     views: null,
     location: '台南市 東區',
     date: '06/28 週六 09:00',
-    thumbnail: null,
+    thumbnail: thumbs[3],
+    summary: [
+      '拍照時光線要充足，靠近窗邊拍效果最好',
+      '照片拍完後，點「編輯」可以調整亮度和對比',
+      '用「裁切」功能把不需要的背景剪掉，照片更好看',
+      '儲存時選「保留原檔」，這樣原本的照片不會消失',
+      '修好的照片可以直接傳給家人或上傳到 LINE',
+    ],
   },
   {
     id: 5,
@@ -62,7 +97,14 @@ export const courses = [
     views: 4107,
     location: null,
     date: null,
-    thumbnail: null,
+    thumbnail: thumbs[0],
+    summary: [
+      '搜尋商品後，優先選評價星數高、評論多的賣家',
+      '付款建議用貨到付款，收到貨沒問題再付錢比較安全',
+      '下單後在「我的訂單」可以看到包裹到哪裡了',
+      '東西有問題，7 天內可以申請退貨退款',
+      '不認識的連結不要點，小心假網站騙個人資料',
+    ],
   },
   {
     id: 6,
@@ -75,7 +117,14 @@ export const courses = [
     views: null,
     location: '台南市 安平區',
     date: '07/05 週六 14:00',
-    thumbnail: null,
+    thumbnail: thumbs[1],
+    summary: [
+      '在搜尋欄輸入想看的內容，例如「台語歌」或「料理教學」',
+      '找到喜歡的頻道後，按紅色「訂閱」按鈕',
+      '再按旁邊的小鈴鐺，選「全部」就能收到新影片通知',
+      '影片太小聲？點螢幕下方的音量圖示可以調大',
+      '訂閱完全免費，不需要信用卡或付錢',
+    ],
   },
   {
     id: 7,
@@ -88,7 +137,14 @@ export const courses = [
     views: 1893,
     location: null,
     date: null,
-    thumbnail: null,
+    thumbnail: thumbs[2],
+    summary: [
+      '到你的銀行官網或App Store 下載該銀行的官方 App',
+      '第一次登入需要帶身分證去銀行臨櫃申請網路銀行',
+      '登入後可以查餘額、轉帳，不需要特地跑銀行',
+      '轉帳前再三確認帳號，轉錯了很難要回來',
+      '若手機遺失，立刻打電話給銀行凍結帳號，保護存款安全',
+    ],
   },
 ]
 

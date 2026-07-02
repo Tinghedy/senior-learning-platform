@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage'
 import FindCoursePage from './pages/FindCoursePage'
 import SavedPage from './pages/SavedPage'
 import VoiceAskPage from './pages/VoiceAskPage'
+import AISummaryPage from './pages/AISummaryPage'
 
 export default function App() {
   const [savedIds,    setSavedIds]    = useState(new Set())
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/find"  element={<FindCoursePage savedIds={savedIds} onToggleSave={toggleSave} />} />
           <Route path="/saved" element={<SavedPage savedIds={savedIds} onToggleSave={toggleSave} enrolledIds={enrolledIds} />} />
           <Route path="/voice" element={<VoiceAskPage />} />
+          <Route path="/ai-summary/:courseId" element={<AISummaryPage />} />
         </Routes>
 
         <VoiceFab />

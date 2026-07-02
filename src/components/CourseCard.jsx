@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { StarIcon, ClockIcon, MapPinIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
+import { useNavigate } from 'react-router-dom'
+import { StarIcon, ClockIcon, MapPinIcon, CalendarDaysIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import Tag from './Tag'
 
 export default function CourseCard({ course, savedIds, onToggleSave }) {
   const [showFeedback, setShowFeedback] = useState(false)
+  const navigate = useNavigate()
   const isSaved = savedIds.has(course.id)
 
   function handleSave() {
@@ -18,8 +20,20 @@ export default function CourseCard({ course, savedIds, onToggleSave }) {
   return (
     <article className="bg-card border-[1.5px] border-border rounded-md shadow-[0_1px_3px_#00000014] overflow-hidden">
       {/* 縮圖 */}
-      <div className="h-[120px] bg-sunken flex items-center justify-center" aria-hidden="true">
-        <span className="text-text-muted text-caption">課程縮圖</span>
+      <div className="relative h-[120px] bg-sunken overflow-hidden">
+        {course.thumbnail
+          ? <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
+          : <div className="w-full h-full flex items-center justify-center"><span className="text-text-muted text-caption">課程縮圖</span></div>
+        }
+        <button
+          type="button"
+          onClick={() => navigate(`/ai-summary/${course.id}`)}
+          aria-label="AI 講重點"
+          className="absolute top-sm right-sm flex items-center gap-xs px-sm py-xs rounded-pill bg-accent text-text-on-accent text-caption font-bold shadow-md"
+        >
+          <SparklesIcon className="w-[14px] h-[14px]" aria-hidden="true" />
+          AI 講重點
+        </button>
       </div>
 
       {/* 內容 */}
