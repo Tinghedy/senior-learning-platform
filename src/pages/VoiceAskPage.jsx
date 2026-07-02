@@ -13,15 +13,26 @@ const MOCK_ANSWERS = {
   '健保卡怎麼查？': '查健保可以用「全民健保行動快易通」App：\n1. 到 App Store 或 Google Play 搜尋「健保快易通」\n2. 下載安裝後，用健保卡綁定帳號\n3. 綁定後就能查就醫紀錄、預約掛號\n\n如果不熟悉 App 操作，我們有「健保卡綁定手機」的圖文教學可以一步一步跟著做。',
 }
 
-const IDLE_STATE     = 'idle'
-const RECORDING_STATE = 'recording'
-const PROCESSING_STATE = 'processing'
+const IDLE       = 'idle'
+const RECORDING  = 'recording'
+const PROCESSING = 'processing'
+const ERROR      = 'error'
 
 export default function VoiceAskPage() {
-  const [voiceState, setVoiceState] = useState(IDLE_STATE)
-  const [messages, setMessages] = useState([])
+  const [voiceState, setVoiceState] = useState(IDLE)
+  const [errorMsg,   setErrorMsg]   = useState('')
+  const [interim,    setInterim]    = useState('')   // 逐字即時文字
+  const [messages,   setMessages]   = useState([])
   const recognitionRef = useRef(null)
-  const chatEndRef = useRef(null)
+  const voiceStateRef  = useRef(IDLE)
+  const interimRef     = useRef('')   // onend 保底送出用
+  const submittedRef   = useRef(false)
+  const chatEndRef     = useRef(null)
+
+  function setVS(s) {
+    voiceStateRef.current = s
+    setVoiceState(s)
+  }
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -33,63 +44,125 @@ export default function VoiceAskPage() {
 
   function handleAnswer(question) {
     addMessage('user', question)
-    setVoiceState(PROCESSING_STATE)
+    setVS(PROCESSING)
+    setErrorMsg('')
     setTimeout(() => {
-      const answer = MOCK_ANSWERS[question] || `你問的是「${question}」，這是個好問題！\n\n目前我正在學習更多相關內容，建議你到「找課程」頁搜尋相關關鍵字，或到「有興趣的課」查看已收藏的課程。`
+      const answer = MOCK_ANSWERS[question]
+        || `你問的是「${question}」，這是個好問題！\n\n建議到「找課程」頁搜尋相關關鍵字，或到「有興趣的課」查看已收藏的課程。`
       addMessage('ai', answer)
-      setVoiceState(IDLE_STATE)
+      setVS(IDLE)
     }, 1200)
   }
 
   function startRecording() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SpeechRecognition) {
-      addMessage('ai', '您的瀏覽器不支援語音辨識。\n\n請試試下方的常見問題按鈕，或直接輸入問題。')
+    setErrorMsg('')
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SR) {
+      setErrorMsg('此裝置不支援語音辨識，請改用下方的常見問題。')
+      setVS(ERROR)
+      setTimeout(() => setVS(IDLE), 3000)
       return
     }
-    const recognition = new SpeechRecognition()
-    recognition.lang = 'zh-TW'
-    recognition.interimResults = false
-    recognition.onresult = e => {
-      const text = e.results[0][0].transcript
-      setVoiceState(IDLE_STATE)
-      handleAnswer(text)
+
+    submittedRef.current = false
+    interimRef.current   = ''
+
+    const rec = new SR()
+    rec.lang = 'zh-TW'
+    rec.interimResults = true
+    rec.continuous = false
+
+    rec.onresult = e => {
+      let finalText   = ''
+      let interimText = ''
+      for (const result of e.results) {
+        if (result.isFinal) finalText   += result[0].transcript
+        else                interimText += result[0].transcript
+      }
+      // 追蹤目前累積的文字，供 onend 保底使用
+      interimRef.current = interimText || finalText || interimRef.current
+      setInterim(interimText)
+
+      if (finalText && !submittedRef.current) {
+        submittedRef.current = true
+        setInterim('')
+        setVS(IDLE)
+        handleAnswer(finalText)
+      }
     }
-    recognition.onerror = () => setVoiceState(IDLE_STATE)
-    recognition.onend   = () => {
-      if (voiceState === RECORDING_STATE) setVoiceState(IDLE_STATE)
+
+    rec.onerror = e => {
+      setInterim('')
+      const msg =
+        e.error === 'not-allowed' ? '請允許麥克風權限後再試一次。' :
+        e.error === 'no-speech'   ? '沒有偵測到說話聲音，請再試一次。' :
+        e.error === 'network'     ? '網路問題，請確認連線後再試。' :
+                                    '語音辨識發生錯誤，請再試一次。'
+      setErrorMsg(msg)
+      setVS(ERROR)
+      setTimeout(() => setVS(IDLE), 3000)
     }
-    recognitionRef.current = recognition
-    recognition.start()
-    setVoiceState(RECORDING_STATE)
+
+    rec.onend = () => {
+      if (submittedRef.current) return   // 已由 onresult 送出，略過
+      const text = interimRef.current.trim()
+      interimRef.current = ''
+      setInterim('')
+      if (text) {
+        submittedRef.current = true
+        setVS(IDLE)
+        handleAnswer(text)
+      } else if (voiceStateRef.current === RECORDING) {
+        setErrorMsg('沒有偵測到說話聲音，請再試一次。')
+        setVS(ERROR)
+        setTimeout(() => setVS(IDLE), 3000)
+      }
+    }
+
+    recognitionRef.current = rec
+    try {
+      rec.start()
+      setVS(RECORDING)
+    } catch {
+      setErrorMsg('無法啟動語音辨識，請重新整理後再試。')
+      setVS(ERROR)
+      setTimeout(() => setVS(IDLE), 3000)
+    }
   }
 
   function stopRecording() {
     recognitionRef.current?.stop()
-    setVoiceState(IDLE_STATE)
+    setVS(IDLE)
   }
 
   function handleMicClick() {
-    if (voiceState === IDLE_STATE) startRecording()
-    else stopRecording()
+    if (voiceState === IDLE || voiceState === ERROR) startRecording()
+    else if (voiceState === RECORDING) stopRecording()
   }
 
-  const micLabel = voiceState === IDLE_STATE ? '點一下開始說話' : voiceState === RECORDING_STATE ? '錄音中，點一下停止' : '處理中……'
+  const micLabel =
+    voiceState === RECORDING  ? '錄音中，點一下停止' :
+    voiceState === PROCESSING ? '處理中……' :
+                                '點一下開始說話'
+
+  const micBg =
+    voiceState === RECORDING  ? 'bg-red-500 animate-pulse' :
+    voiceState === ERROR       ? 'bg-red-400' :
+                                 'bg-accent hover:bg-accent-hover'
 
   return (
-    <main className="flex flex-col h-dvh">
+    <main className="flex flex-col h-full">
       <TopBar title="語音問問題" showBack />
 
       {/* 對話區 */}
-      <div className="flex-1 overflow-y-auto px-md pt-md pb-sm flex flex-col gap-md">
+      <div className="flex-1 overflow-y-auto px-md pt-md pb-sm flex flex-col gap-md min-h-0">
         {messages.length === 0 && (
-          <p className="text-body text-text-muted text-center py-lg">點下方麥克風說出你的問題，\n或從常見問題選一個</p>
+          <p className="text-body text-text-muted text-center py-lg">
+            點下方麥克風說出你的問題，{'\n'}或從常見問題選一個
+          </p>
         )}
         {messages.map(msg => (
-          <div
-            key={msg.id}
-            className={['flex', msg.role === 'user' ? 'justify-end' : 'justify-start'].join(' ')}
-          >
+          <div key={msg.id} className={['flex', msg.role === 'user' ? 'justify-end' : 'justify-start'].join(' ')}>
             <div
               className={[
                 'max-w-[85%] px-md py-sm rounded-lg text-body whitespace-pre-line',
@@ -108,7 +181,7 @@ export default function VoiceAskPage() {
       </div>
 
       {/* 常見問題 */}
-      <div className="px-md pb-sm">
+      <div className="px-md pb-sm shrink-0">
         <p className="text-caption text-text-muted mb-sm font-medium">常見問題</p>
         <div className="flex flex-wrap gap-sm">
           {QUICK_QUESTIONS.map(q => (
@@ -116,7 +189,7 @@ export default function VoiceAskPage() {
               key={q}
               type="button"
               onClick={() => handleAnswer(q)}
-              disabled={voiceState === PROCESSING_STATE}
+              disabled={voiceState === PROCESSING}
               className="min-h-touch px-md rounded-pill border-[1.5px] border-border bg-card text-body text-text-primary hover:border-accent hover:text-accent transition-colors disabled:opacity-50"
             >
               {q}
@@ -125,25 +198,40 @@ export default function VoiceAskPage() {
         </div>
       </div>
 
-      {/* 麥克風 + 狀態 */}
-      <div className="flex flex-col items-center gap-md px-md pt-md pb-[calc(56px+24px)]">
+      {/* 即時逐字稿 */}
+      {interim && (
+        <div className="px-md pb-sm shrink-0">
+          <p className="text-body-lg text-text-primary text-center leading-relaxed bg-card border-[1.5px] border-accent rounded-md px-md py-sm animate-pulse">
+            {interim}
+          </p>
+        </div>
+      )}
+
+      {/* 麥克風 */}
+      <div className="flex flex-col items-center gap-sm px-md pt-md pb-lg shrink-0" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}>
         <button
           type="button"
           onClick={handleMicClick}
-          disabled={voiceState === PROCESSING_STATE}
+          disabled={voiceState === PROCESSING}
           aria-label={micLabel}
           className={[
-            'w-[96px] h-[96px] rounded-full flex items-center justify-center transition-all shadow-[0_4px_16px_#0000001f] disabled:opacity-50',
-            voiceState === RECORDING_STATE
-              ? 'bg-error animate-pulse'
-              : 'bg-accent hover:bg-accent-hover',
+            'w-[96px] h-[96px] rounded-full flex items-center justify-center transition-all shadow-[0_4px_16px_#0000001f] disabled:opacity-50 touch-manipulation',
+            micBg,
           ].join(' ')}
         >
           <MicrophoneIcon className="w-[40px] h-[40px] text-white" aria-hidden="true" />
         </button>
+
         <p className="text-body text-text-secondary text-center" aria-live="polite">
           {micLabel}
         </p>
+
+        {/* 錯誤訊息：直接顯示在按鈕下方，醒目可見 */}
+        {errorMsg && (
+          <p role="alert" className="text-body text-red-500 text-center font-medium px-md">
+            {errorMsg}
+          </p>
+        )}
       </div>
     </main>
   )
