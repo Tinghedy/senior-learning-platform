@@ -12,7 +12,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline'
-import TopBar from '../components/TopBar'
 import SearchField from '../components/SearchField'
 import CourseCard from '../components/ui/CourseCard'
 import illustration1 from '../assets/20036.svg'
@@ -53,9 +52,7 @@ export default function HomePage() {
 
   return (
     <main>
-      <TopBar title="樂齡學習平台" />
-
-      <div className="px-md pt-md pb-[calc(var(--touch-target)+80px)] flex flex-col gap-xl">
+<div className="px-md pt-md pb-[calc(var(--touch-target)+80px)] flex flex-col gap-xl">
 
         {/* 最新消息輪播 */}
         <section aria-label="最新消息">

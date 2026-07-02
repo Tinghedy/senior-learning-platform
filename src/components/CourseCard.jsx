@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { StarIcon, ClockIcon, MapPinIcon, CalendarDaysIcon, SparklesIcon } from '@heroicons/react/24/outline'
+import { StarIcon, ClockIcon, MapPinIcon, CalendarDaysIcon, SparklesIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import Tag from './Tag'
 
@@ -72,7 +72,7 @@ export default function CourseCard({ course, savedIds, onToggleSave }) {
           </div>
         )}
 
-        {/* 收藏鈕 + 成功回饋 */}
+        {/* 收藏鈕 + 外部連結 + 成功回饋 */}
         <div className="flex items-center gap-md pt-xs border-t border-border">
           <button
             type="button"
@@ -87,6 +87,19 @@ export default function CourseCard({ course, savedIds, onToggleSave }) {
             }
             {isSaved ? '已收藏' : '加入有興趣'}
           </button>
+
+          {course.url && (
+            <a
+              href={course.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="前往學習（開啟新分頁）"
+              className="flex items-center gap-xs min-h-touch px-md rounded-pill bg-accent text-text-on-accent text-body font-medium hover:bg-accent-hover transition-colors"
+            >
+              <ArrowTopRightOnSquareIcon className="w-[18px] h-[18px]" aria-hidden="true" />
+              前往學習
+            </a>
+          )}
 
           {showFeedback && (
             <p role="status" aria-live="polite" className="text-caption text-success font-medium">

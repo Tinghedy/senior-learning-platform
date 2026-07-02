@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import TabBar from './components/TabBar'
 import VoiceFab from './components/VoiceFab'
 import HomePage from './pages/HomePage'
@@ -21,26 +21,24 @@ export default function App() {
     })
   }
 
-  const location = useLocation()
-  const isVoicePage = location.pathname === '/voice'
-
   return (
-    /* transform: translateZ(0) 讓 position:fixed 子元素相對此框定位，而非 viewport */
     <div className="h-dvh bg-[#D6D3CC] flex justify-center overflow-hidden">
-      <div
-        className="relative w-full max-w-[390px] h-dvh overflow-y-auto bg-page shadow-2xl"
-        style={{ transform: 'translateZ(0)' }}
-      >
-        <Routes>
-          <Route path="/"      element={<HomePage />} />
-          <Route path="/find"  element={<FindCoursePage savedIds={savedIds} onToggleSave={toggleSave} />} />
-          <Route path="/saved" element={<SavedPage savedIds={savedIds} onToggleSave={toggleSave} enrolledIds={enrolledIds} />} />
-          <Route path="/voice" element={<VoiceAskPage />} />
-          <Route path="/ai-summary/:courseId" element={<AISummaryPage />} />
-        </Routes>
-
-        <VoiceFab />
+      {/* 三段式 flex-col：scroll 區 + TabBar 釘底 */}
+      <div className="relative w-full max-w-[390px] h-dvh flex flex-col bg-page shadow-2xl">
         <TabBar />
+
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <Routes>
+            <Route path="/"      element={<HomePage />} />
+            <Route path="/find"  element={<FindCoursePage savedIds={savedIds} onToggleSave={toggleSave} />} />
+            <Route path="/saved" element={<SavedPage savedIds={savedIds} onToggleSave={toggleSave} enrolledIds={enrolledIds} />} />
+            <Route path="/voice" element={<VoiceAskPage />} />
+            <Route path="/ai-summary/:courseId" element={<AISummaryPage />} />
+          </Routes>
+        </div>
+
+        {/* absolute：不佔 flex 空間，浮在右下角 */}
+        <VoiceFab />
       </div>
     </div>
   )
