@@ -8,9 +8,15 @@ const QUICK_QUESTIONS = [
   '手機如何設定 Wi-Fi？',
 ]
 
-const MOCK_ANSWERS = {
-  '怎麼用 LINE 視訊？': '用 LINE 視訊很簡單，只要三步驟：\n1. 打開 LINE，找到你要視訊的朋友\n2. 進入聊天室後，點右上角的電話圖示\n3. 選「視訊通話」，對方接了就可以看到彼此\n\n如果想學更多，可以看我們的【LINE 視訊通話完整教學】影片，18 分鐘帶你從頭學。',
-  '健保卡怎麼查？': '查健保可以用「全民健保行動快易通」App：\n1. 到 App Store 或 Google Play 搜尋「健保快易通」\n2. 下載安裝後，用健保卡綁定帳號\n3. 綁定後就能查就醫紀錄、預約掛號\n\n如果不熟悉 App 操作，我們有「健保卡綁定手機」的圖文教學可以一步一步跟著做。',
+async function askGemini(question) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question }),
+  })
+  if (!res.ok) throw new Error('API 回應錯誤')
+  const data = await res.json()
+  return data.answer
 }
 
 const IDLE       = 'idle'
@@ -42,16 +48,18 @@ export default function VoiceAskPage() {
     setMessages(prev => [...prev, { role, text, id: Date.now() }])
   }
 
-  function handleAnswer(question) {
+  async function handleAnswer(question) {
     addMessage('user', question)
     setVS(PROCESSING)
     setErrorMsg('')
-    setTimeout(() => {
-      const answer = MOCK_ANSWERS[question]
-        || `你問的是「${question}」，這是個好問題！\n\n建議到「找課程」頁搜尋相關關鍵字，或到「有興趣的課」查看已收藏的課程。`
+    try {
+      const answer = await askGemini(question)
       addMessage('ai', answer)
+    } catch {
+      addMessage('ai', '抱歉，網路有點問題，請稍後再試一次。')
+    } finally {
       setVS(IDLE)
-    }, 1200)
+    }
   }
 
   function startRecording() {

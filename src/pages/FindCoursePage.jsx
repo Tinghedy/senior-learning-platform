@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import SearchField from '../components/SearchField'
 import CourseCard from '../components/CourseCard'
-import { courses } from '../data/courses'
+import { courses, categories } from '../data/courses'
 
 const MODES = [
   { id: 'all',     label: '全部' },
@@ -11,16 +12,26 @@ const MODES = [
 ]
 
 export default function FindCoursePage({ savedIds, onToggleSave }) {
+  const [searchParams] = useSearchParams()
+  const categoryParam   = searchParams.get('category') || 'all'
+
   const [search, setSearch] = useState('')
-  const [mode, setMode] = useState('all')
+  const [mode,   setMode]   = useState('all')
+
+  const activeCategoryLabel = categoryParam === 'all'
+    ? null
+    : categories.find(c => c.id === categoryParam)?.label
 
   const filtered = useMemo(() => {
     return courses.filter(c => {
-      const matchMode   = mode === 'all' || c.mode === mode
-      const matchSearch = !search || c.title.includes(search) || c.desc.includes(search)
-      return matchMode && matchSearch
+      const matchMode     = mode === 'all' || c.mode === mode
+      const matchCategory = categoryParam === 'all' || c.category === categoryParam
+      const matchSearch   = !search
+        || c.title.includes(search)
+        || (c.desc ?? '').includes(search)
+      return matchMode && matchCategory && matchSearch
     })
-  }, [search, mode])
+  }, [search, mode, categoryParam])
 
   return (
     <main>
@@ -37,6 +48,16 @@ export default function FindCoursePage({ savedIds, onToggleSave }) {
           onChange={e => setSearch(e.target.value)}
           id="find-search"
         />
+
+        {/* 目前篩選的類別 tag */}
+        {activeCategoryLabel && (
+          <div className="flex items-center gap-sm">
+            <span className="text-caption text-text-muted">類別：</span>
+            <span className="px-sm py-xs rounded-pill bg-accent text-text-on-accent text-caption font-medium">
+              {activeCategoryLabel}
+            </span>
+          </div>
+        )}
 
         {/* 上課方式 toggle */}
         <fieldset>
