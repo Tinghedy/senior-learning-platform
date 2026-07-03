@@ -26,9 +26,10 @@ export default function FindCoursePage({ savedIds, onToggleSave }) {
     return courses.filter(c => {
       const matchMode     = mode === 'all' || c.mode === mode
       const matchCategory = categoryParam === 'all' || c.category === categoryParam
-      const matchSearch   = !search
-        || c.title.includes(search)
-        || (c.desc ?? '').includes(search)
+      const q = search.toLowerCase()
+      const matchSearch   = !q
+        || c.title.toLowerCase().includes(q)
+        || (c.desc ?? '').toLowerCase().includes(q)
       return matchMode && matchCategory && matchSearch
     })
   }, [search, mode, categoryParam])
