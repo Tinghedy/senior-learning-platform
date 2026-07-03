@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 export default function VoiceFab() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  if (pathname === '/voice') return null
+  if (pathname === '/voice' || pathname.startsWith('/course/')) return null
 
   return (
     <button

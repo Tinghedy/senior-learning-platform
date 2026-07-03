@@ -9,7 +9,8 @@ export default function CourseCard({ course, savedIds, onToggleSave }) {
   const navigate = useNavigate()
   const isSaved = savedIds.has(course.id)
 
-  function handleSave() {
+  function handleSave(e) {
+    e.stopPropagation()
     onToggleSave(course.id)
     if (!isSaved) {
       setShowFeedback(true)
@@ -17,23 +18,36 @@ export default function CourseCard({ course, savedIds, onToggleSave }) {
     }
   }
 
+  function handleCardClick() {
+    if (course.url) {
+      window.open(course.url, '_blank', 'noopener,noreferrer')
+    } else {
+      navigate(`/course/${course.id}`)
+    }
+  }
+
   return (
-    <article className="bg-card border-[1.5px] border-border rounded-md shadow-[0_1px_3px_#00000014] overflow-hidden">
+    <article
+      onClick={handleCardClick}
+      className="bg-card border-[1.5px] border-border rounded-md shadow-[0_1px_3px_#00000014] overflow-hidden cursor-pointer hover:border-accent transition-colors"
+    >
       {/* 縮圖 */}
       <div className="relative h-[120px] bg-sunken overflow-hidden">
         {course.thumbnail
           ? <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
           : <div className="w-full h-full flex items-center justify-center"><span className="text-text-muted text-caption">課程縮圖</span></div>
         }
-        <button
-          type="button"
-          onClick={() => navigate(`/ai-summary/${course.id}`)}
-          aria-label="AI 講重點"
-          className="absolute top-sm right-sm flex items-center gap-xs px-sm py-xs rounded-pill bg-accent text-text-on-accent text-caption font-bold shadow-md"
-        >
-          <SparklesIcon className="w-[14px] h-[14px]" aria-hidden="true" />
-          AI 講重點
-        </button>
+        {course.summary?.length > 0 && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); navigate(`/ai-summary/${course.id}`) }}
+            aria-label="AI 講重點"
+            className="absolute top-sm right-sm flex items-center gap-xs px-sm py-xs rounded-pill bg-accent text-text-on-accent text-caption font-bold shadow-md"
+          >
+            <SparklesIcon className="w-[14px] h-[14px]" aria-hidden="true" />
+            AI 講重點
+          </button>
+        )}
       </div>
 
       {/* 內容 */}
@@ -93,6 +107,7 @@ export default function CourseCard({ course, savedIds, onToggleSave }) {
               href={course.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               aria-label="前往學習（開啟新分頁）"
               className="flex items-center gap-xs min-h-touch px-md rounded-pill bg-accent text-text-on-accent text-body font-medium hover:bg-accent-hover transition-colors"
             >
